@@ -5,14 +5,16 @@ import {
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { TagInterface } from '../types/tag.interface';
-import { HttpErrorResponse } from '@angular/common/http';
+import {
+  HttpErrorResponse,
+  HttpXsrfTokenExtractor,
+} from '@angular/common/http';
 
 describe('ApiService', () => {
   let apiService: ApiService;
   let httpTestingController: HttpTestingController;
 
   beforeEach(() => {
-
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [ApiService],
@@ -20,7 +22,6 @@ describe('ApiService', () => {
 
     apiService = TestBed.inject(ApiService);
     httpTestingController = TestBed.inject(HttpTestingController);
-
   });
 
   afterEach(() => {
@@ -32,7 +33,6 @@ describe('ApiService', () => {
   });
 
   describe('getTags', () => {
-
     it('should return a list of tags', () => {
       let tags: TagInterface[] | undefined;
       apiService.getTags().subscribe((response) => {
@@ -42,11 +42,9 @@ describe('ApiService', () => {
       req.flush([{ id: '1', name: 'foo' }]);
       expect(tags).toEqual([{ id: '1', name: 'foo' }]);
     });
-
   });
 
   describe('createTag', () => {
-
     it('should create a tag', () => {
       let tag: TagInterface | undefined;
       apiService.createTag('foo').subscribe((response) => {
@@ -58,13 +56,10 @@ describe('ApiService', () => {
     });
 
     it('passes the correct body', () => {
-
       let tag: TagInterface | undefined;
-
       apiService.createTag('foo').subscribe((response) => {
         tag = response;
       });
-
       const req = httpTestingController.expectOne('http://localhost:3004/tags');
       req.flush({ id: '1', name: 'foo' });
       expect(req.request.method).toEqual('POST');
@@ -72,23 +67,19 @@ describe('ApiService', () => {
     });
 
     it('throws an error if request fails', () => {
-
       let actualError: HttpErrorResponse | undefined;
-
       apiService.createTag('foo').subscribe({
         next: () => {
-          fail('Sucess should not be called')
+          fail('Success should not be called');
         },
-        error: err => {
+        error: (err) => {
           actualError = err;
-        }
+        },
       });
-
       const req = httpTestingController.expectOne('http://localhost:3004/tags');
-
       req.flush('Server error', {
         status: 422,
-        statusText: 'Unprocessible entity'
+        statusText: 'Unprocessible entity',
       });
 
       if (!actualError) {
@@ -97,10 +88,6 @@ describe('ApiService', () => {
 
       expect(actualError.status).toEqual(422);
       expect(actualError.statusText).toEqual('Unprocessible entity');
-
     });
-
   });
-
-
 });
