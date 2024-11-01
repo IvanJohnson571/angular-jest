@@ -5,14 +5,15 @@ import { By } from '@angular/platform-browser';
 import { first } from 'rxjs';
 
 describe('PaginationComponent', () => {
-
   let component: PaginationComponent;
   let fixture: ComponentFixture<PaginationComponent>;
-
+  const mockUtilsService = {
+    range: () => [1, 2, 3, 4, 5],
+  };
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [PaginationComponent],
-      providers: [UtilsService],
+      providers: [{ provide: UtilsService, useValue: mockUtilsService }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(PaginationComponent);
@@ -21,7 +22,6 @@ describe('PaginationComponent', () => {
     component.limit = 10;
     component.currentPage = 1;
     fixture.detectChanges();
-
   });
 
   it('creates component', () => {
@@ -38,20 +38,15 @@ describe('PaginationComponent', () => {
   });
 
   it('should emit a clicked page', () => {
-
     const pageContainers = fixture.debugElement.queryAll(
       By.css('[data-testid="page-container"]')
     );
-
     let clickedPage: number | undefined;
 
     component.pageChangeEvent.pipe(first()).subscribe((page) => {
       clickedPage = page;
     });
-
     pageContainers[0].triggerEventHandler('click');
     expect(clickedPage).toEqual(1);
-
   });
-
 });
