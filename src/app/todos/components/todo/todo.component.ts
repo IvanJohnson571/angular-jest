@@ -31,7 +31,6 @@ export class TodoComponent implements OnInit, OnChanges {
   editingText: string = '';
 
   ngOnInit(): void {
-    console.log('INIT TODO');
     this.editingText = this.todo.text;
   }
 
